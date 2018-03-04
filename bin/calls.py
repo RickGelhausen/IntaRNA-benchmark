@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # Author: Rick Gelhausen
 import sys, getopt
+import argparse
 import os
 import glob
 from subprocess import Popen
@@ -14,17 +15,6 @@ from subprocess import PIPE
 #                                                                                                                      #
 ########################################################################################################################
 
-# help text
-usage= "Call with: python3 calls.py -a1 <argument1> -a2 ..." \
-       "The following arguments are available:\n" \
-       "--ifile  (-i) : path where the intaRNA executable lies. Default: ../IntaRNA/src/bin . \n" \
-       "--ffile  (-f) : input folder containing the faster files required. Default: ./input .\n" \
-       "--ofile  (-o) : output folder.\n" \
-       "--arg    (-a) : command line arguments applied to the intaRNA query. \n" \
-       "--callID (-c) : mandatory callID used to identify call. \n" \
-       "--help   (-h) : print this usage. \n"
-
-
 # Run a subprocess with the given call
 def runSubprocess(call_, outputPath):
     with Popen(call_, shell=True, stdout=PIPE) as process:
@@ -37,62 +27,48 @@ def runSubprocess(call_, outputPath):
 
 
 def main(argv):
-    intaRNAPath = os.path.join("..", "..", "IntaRNA", "src", "bin", "")
-    outputPath = os.path.join("..", "output")
-    inputPath = os.path.join("..", "input")
-    commandLineArguments = ""
-    callID = ""
+    parser = argparse.ArgumentParser(description="Call script for benchmarking IntaRNA")
+    parser.add_argument("-i", "--ifile", action="store", dest="intaRNAPath", default=os.path.join("..", "..", "IntaRNA", "src", "bin", ""),help="path where the intaRNA executable lies. Default: ../../IntaRNA/src/bin .")
+    parser.add_argument("-o", "--ofile", action="store", dest="outputPath", default=os.path.join("..", "output"),help="output folder.")
+    parser.add_argument("-f", "--ffile", action="store", dest="inputPath", default=os.path.join("..", "input"),help="input folder containing the fasta files required. Default: ./input")
+    parser.add_argument("-a", "--arg", nargs="*", dest="commandLineArguments", default=[],help="command line arguments applied to the intaRNA query."
+                                                                                               "Please use ** instead of -- (*/-) to avoid parser confusions.")
+    parser.add_argument("-c", "--callID", action="store", dest="callID", default="",help="mandatory callID used to identify call.")
+    args = parser.parse_args()
 
-    # commandline parsing
-    try:
-        opts, args = getopt.getopt(argv,"hi:o:f:a:c:",["ifile=", "ofile=", "ffile=", "arg=", "callID="])
-    except getopt.GetoptError:
-        print("ERROR! Call <python3 calls.py -h> for help")
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt in ("-h", "--help"):
-            print(usage)
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            intaRNAPath = arg
-        elif opt in ("-o", "--ofile"):
-            outputPath = arg
-        elif opt in ("-f", "--ffile"):
-            inputPath = arg
-        elif opt in ("-a", "--arg"):
-            commandLineArguments = arg
-        elif opt in ("-c", "--callID"):
-            callID = arg
-
-    # Check whether a callID was given
-    if callID == "":
+    if args.callID == "":
         sys.exit("No callID was specified! Please specify a callID using -c <name> or --callID=<name>")
 
     # Check whether intaRNA path exists
-    if not os.path.exists(intaRNAPath):
+    if not os.path.exists(args.intaRNAPath):
         sys.exit("Error!!! IntaRNA filePath does not exist! Please specify it using python3 calls.py -i <intaRNApath>!")
 
     # Create outputFolder for this callID if not existing
-    if not os.path.exists(os.path.join(outputPath, callID)):
-        os.makedirs(os.path.join(outputPath, callID))
+    if not os.path.exists(os.path.join(args.outputPath, args.callID)):
+        os.makedirs(os.path.join(args.outputPath, args.callID))
     else:
-        sys.exit("Error!!! A directory for callID %s already exists!" % callID)
+        sys.exit("Error!!! A directory for callID %s already exists!" % args.callID)
 
     # Organisms
-    organisms = [x.split(os.path.sep)[-1] for x in glob.glob(os.path.join(inputPath,"*")) if os.path.isdir(x)]
+    organisms = [x.split(os.path.sep)[-1] for x in glob.glob(os.path.join(args.inputPath,"*")) if os.path.isdir(x)]
     if organisms == []:
         sys.exit("Input folder is empty!")
 
+    # Handle commandLineArguments for IntaRNA
+    if args.commandLineArguments != []:
+        cmdLineArguments = " ".join(args.commandLineArguments)
+        cmdLineArguments = cmdLineArguments.replace("*","-")
+
     # Filepaths
-    callLogFilePath = os.path.join(outputPath, callID, "calls.txt")
-    timeLogFilePath = os.path.join(outputPath, callID, "runTime.csv")
-    memoryLogFilePath = os.path.join(outputPath, callID, "memoryUsage.csv")
+    callLogFilePath = os.path.join(args.outputPath, args.callID, "calls.txt")
+    timeLogFilePath = os.path.join(args.outputPath, args.callID, "runTime.csv")
+    memoryLogFilePath = os.path.join(args.outputPath, args.callID, "memoryUsage.csv")
 
     for organism in organisms:
         # check if query and target folder exist
-        if not os.path.exists(os.path.join(inputPath, organism, "query")):
+        if not os.path.exists(os.path.join(args.inputPath, organism, "query")):
             sys.exit("Error!!! Could not find query path for %s!" % organism)
-        if not os.path.exists(os.path.join(inputPath, organism, "target")):
+        if not os.path.exists(os.path.join(args.inputPath, organism, "target")):
             sys.exit("Error!!! Could not find target path for %s!" % organism)
 
         fastaFileEndings = [".fasta", ".fa"]
@@ -100,8 +76,8 @@ def main(argv):
         srna_files = []
         target_files = []
         for ending in fastaFileEndings:
-            srna_files.extend(glob.glob(os.path.join(inputPath, organism, "query", "*" + ending)))
-            target_files.extend(glob.glob(os.path.join(inputPath, organism, "target", "*" + ending)))
+            srna_files.extend(glob.glob(os.path.join(args.inputPath, organism, "query", "*" + ending)))
+            target_files.extend(glob.glob(os.path.join(args.inputPath, organism, "target", "*" + ending)))
 
         # Sort input
         srna_files.sort()
@@ -118,8 +94,8 @@ def main(argv):
             target_name = target_file.split(os.path.sep)[-1].split(".")[0]
             # Variables to create the timeLog table
             header = "callID;target_name;Organism"
-            timeLine = "%s;%s;%s" % (callID, target_name, organism)
-            memoryLine = "%s;%s;%s" % (callID, target_name, organism)
+            timeLine = "%s;%s;%s" % (args.callID, target_name, organism)
+            memoryLine = "%s;%s;%s" % (args.callID, target_name, organism)
 
             for srna_file in srna_files:
                 srna_name = srna_file.split(os.path.sep)[-1].split("_")[0]
@@ -130,15 +106,15 @@ def main(argv):
                 memoryLine += ";"
 
                 # IntaRNA call
-                call = intaRNAPath + "IntaRNA" + " -q " + srna_file \
+                call = args.intaRNAPath + "IntaRNA" + " -q " + srna_file \
                                                + " -t " + target_file \
                                                + " --out=stdout --outMode=C "  \
-                                               + commandLineArguments
+                                               + cmdLineArguments
                 print(call)
                 print("%s\n" % call, file=open(callLogFilePath,"a"))
 
                 # Outputfilepath
-                out = os.path.join(outputPath, callID, srna_name + "_" + target_name + ".csv")
+                out = os.path.join(args.outputPath, args.callID, srna_name + "_" + target_name + ".csv")
 
                 # record time in seconds and memory in KB of this call
                 timeCall, maxMemory = runSubprocess(call, out)
@@ -159,7 +135,7 @@ def main(argv):
 
 
     # Start benchmarking for this callID
-    callBenchmark = "python3 benchmark.py -b %s" % (callID)
+    callBenchmark = "python3 benchmark.py -b %s" % (args.callID)
     with Popen(callBenchmark, shell=True, stdout=PIPE) as process:
         print(str(process.stdout.read(), "utf-8"))
 

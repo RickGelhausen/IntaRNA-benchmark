@@ -49,6 +49,8 @@ There are many different controls to assure that no files are overwritten and th
 The time (in seconds) and maximal memory usage (in megabyte) required to handle each call is also measured and represented in a table. 
 The tables are also stored in the specified output path. The individual calls are also logged into a log file.
 
+The commandline arguments for IntaRNA must be given by replacing "--" with "**" ("-" to "*") in order to avoid confusion with the argparse arguments.
+
 Calls the benchmark.py using the specified callID as benchID.
 
 __Output:__ (contained in the respective callID folder)
