@@ -58,7 +58,8 @@ def main(argv):
     if args.commandLineArguments != []:
         cmdLineArguments = " ".join(args.commandLineArguments)
         cmdLineArguments = cmdLineArguments.replace("*","-")
-
+    else:
+        cmdLineArguments = ""
     # Filepaths
     callLogFilePath = os.path.join(args.outputPath, args.callID, "calls.txt")
     timeLogFilePath = os.path.join(args.outputPath, args.callID, "runTime.csv")

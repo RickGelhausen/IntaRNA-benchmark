@@ -17,7 +17,7 @@ import pandas as pd
 usage = "Call with: python3 mergeBenchmarks.py -a1 <argument1> -a2 ... \n" \
         "The following arguments are available: \n" \
         "--ofile   (-o) : path and name of outputfile. MANDATORY. .\n" \
-        "--bdirs   (-d) : path to the benchmark folder. Default: ./output \n" \
+        "--bdirs   (-d) : path to the benchmark folder. Default: ../output \n" \
         "--benchID (-b) : benchIDs to be merged. benchID1/benchID2/... \n" \
         "--all     (-a) : if parameter is set no benchID needs to be specified. Every ID is used automatically.\n" \
         "--help    (-h) : print usage. \n"
@@ -59,6 +59,7 @@ def mergeLogFiles(benchIDList, benchPath, outputpath):
     # Write to csv
     timeDF.to_csv(outputpath[:-len(".csv")] + "_runTimes.csv", sep=";", index=False)
     memoryDF.to_csv(outputpath[:-len(".csv")] + "_MaxMemoryUsage.csv", sep=";", index=False)
+    print("Merge completed!!")
 
 
 def main(argv):
@@ -93,7 +94,6 @@ def main(argv):
 
     # read all benchfiles in folder
     allIDfolders = [x for x in glob.glob(os.path.join(benchFilePath, "*")) if os.path.isdir(x)]
-    print(allIDfolders)
 
     if not all:
         # Check whether a benchID was given
