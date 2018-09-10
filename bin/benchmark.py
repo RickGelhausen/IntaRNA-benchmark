@@ -19,7 +19,7 @@ def main(argv):
 
     # Check whether a callID was given
     if args.callID == "":
-        sys.exit("No callID was specified! Please specify a callID using -b <name> or --callID=<name>")
+        sys.exit("No callID was specified! Please specify a callID using -c <name> or --callID=<name>")
 
     # read verified interactions
     if os.path.exists(args.verified_interactions) == True:

@@ -60,7 +60,7 @@ def main(argv):
 
     # Check whether intaRNA path exists
     if not os.path.exists(args.intaRNAPath):
-        sys.exit("Error!!! IntaRNA filePath does not exist! Please specify it using -i <intaRNApath>!")
+        sys.exit("Error!!! IntaRNA filePath does not exist! Please specify it using -b <intaRNApath>!")
 
     # Create outputFolder for this callID if not existing
     if not os.path.exists(os.path.join(args.outputPath, args.callID)):
