@@ -33,12 +33,12 @@ def main(argv):
     parser = argparse.ArgumentParser(
         description="Call script for benchmarking IntaRNA. IntaRNA commandLineArguments can be added at the end of the call."
                     "python3 calls.py -c <callID>  --<IntaRNA arguments>")
-    parser.add_argument("-i", "--ifile", action="store", dest="intaRNAPath",
+    parser.add_argument("-b", "--intaRNAbinary", action="store", dest="intaRNAPath",
                         default=os.path.join("..", "..", "IntaRNA", "src", "bin")
                         , help="the location of the intaRNA executable. Default: ../../IntaRNA/src/bin .")
-    parser.add_argument("-f", "--ffile", action="store", dest="inputPath", default=os.path.join("..", "input")
+    parser.add_argument("-i", "--infile", action="store", dest="inputPath", default=os.path.join("..", "input")
                         , help="input folder containing the required fasta files. Default: ./input")
-    parser.add_argument("-o", "--ofile", action="store", dest="outputPath", default=os.path.join("..", "output")
+    parser.add_argument("-o", "--outfile", action="store", dest="outputPath", default=os.path.join("..", "output")
                         , help="location of the output folder.")
     parser.add_argument("-c", "--callID", action="store", dest="callID", default=""
                         , help="a mandatory ID to differentiate between multiple calls of the script.")

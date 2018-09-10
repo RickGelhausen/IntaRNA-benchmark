@@ -45,11 +45,12 @@ The scripts are contained in the bin folder.
 
 #### calls.py
 __Parameters:__
-* __intaRNAPath (`-i`)__ the location of the intaRNA executable. Default: __..__/__..__/IntaRNA/src/bin/ 
-* __inputPath (`-f`)__ location of the folder containing folders for each organism. The organism folders have to contain a query and a target folder holding the according fasta files. Default: __..__/input/
-* __outputPath (`-o`)__ location of the output folder. The script will add a folder for each callID. Default: __..__/output/
+* __intaRNAbinary (`-b`)__ the location of the intaRNA executable. Default: `../../IntaRNA/src/bin/` 
+* __infile (`-i`)__ location of the folder containing folders for each organism. The organism folders have to contain a query and a target folder holding the according fasta files. Default: `../input/`
+* __outfile (`-o`)__ location of the output folder. The script will add a folder for each callID. Default: `../output/`
 * __callID (`-c`)__ is a mandatory ID to differentiate between multiple calls of the script.
 * __withED (`-e`)__ allows the precomputation of target ED-values in order to avoid recomputation.
+* __callsOnly (`-n`)__ generates the calls and saves them in a log file without starting the process.
 
 __IMPORTANT:__ Arguments for IntaRNA can be added at the end of the script call and will be redirected to IntaRNA. python3 calls.py -c "callID"   --"IntaRNA cmdLineArguments"
 
@@ -75,10 +76,10 @@ __Output:__ (contained in the respective callID folder)
 #### benchmark.py
 
 __Parameters:__
-* __verifiedHybrids (`-i`)__ the location of the file containing the experimentally verified interactions. Default: __..__/verified_interactions.csv
-* __outputFile (`-o`)__ the name of the output file. Default: /benchmark.csv
-* __outputPath (`-p`)__ the location where the output of the calls.py script lies. Default: __..__/output/
-* __benchID (`-b`)__ mandatory ID to differentiate between multiple benchmarkings. (equal to callID)
+* __infile (`-i`)__ the location of the file containing the experimentally verified interactions. Default: `../verified_interactions.csv`
+* __outfile (`-o`)__ the name of the output file. Default: `/benchmark.csv`
+* __callDirs (`-p`)__ the location where the output of the calls.py script lies. Default: `../output/`
+* __callID (`-c`)__ mandatory ID to differentiate between multiple benchmarkings.
 
 This script uses the output of the `calls.py` script. It is called automatically at the end of the `calls.py` script.
 It stores the verified interactions from the specified file in a dictionary and calculates the rank for each interaction.
@@ -96,7 +97,7 @@ __Default Output:__ (contained in the respective `callID` folder)
 __Parameters:__
 * __benchmarkFile (`-i`)__ mandatory benchmark file used to plot the results. (created using benchmark.py eventually in compination with mergeBenchmarks.py)
 * __outputFilePath (`-o`)__ the location and name of the output file. Default: IntaRNA2_benchmark.pdf .
-* __separator (`-s`)__ separator used for the csv files. Default: '__;__'
+* __separator (`-s`)__ separator used for the csv files. Default: `;`
 * __end (`-e`)__ the upper bound of the number of target predictions. Default: 200
 * __xlim (`-x`)__ specify an x-limit for the output. x_start/x_end (x is already bound by end, changing might lead to strange results)
 * __ylim (`-y`)__ specify an y-limit for the output. y_start/y_end
@@ -115,7 +116,7 @@ __Default Output:__
 __Parameters:__
 * __benchmarkFile (`-i`)__ mandatory benchmark file used to plot the results. (created using benchmark.py eventually in compination with mergeBenchmarks.py)
 * __outputFilePath (`-o`)__ the location and name of the output file. Default: IntaRNA2_benchmark.pdf .
-* __separator (`-s`)__ separator used for the csv files. Default: '__;__'
+* __separator (`-s`)__ separator used for the csv files. Default: `;`
 * __title (`-t`)__ title for the plot
 * __rankThreshold (`-r`)__ thresholds for which the boxplots are created. Default: 5 10 50 100 200
 * __fixedID (`-f`)__ the callID for the reference curve (needed for the boxplots)
