@@ -189,7 +189,7 @@ def main(argv):
 
     if not args.noJobStart:
         # Start benchmarking for this callID
-        callBenchmark = "python3 benchmark.py -b %s" % (args.callID)
+        callBenchmark = "python3 benchmark.py -c %s" % (args.callID)
         with Popen(shlex.split(callBenchmark, posix=False), stdout=PIPE) as process:
             print(str(process.stdout.read(), "utf-8"))
 
